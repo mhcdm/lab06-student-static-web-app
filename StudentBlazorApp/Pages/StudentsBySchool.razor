@@ -1,0 +1,53 @@
+@page "/students-by-school"
+@inject HttpClient Http
+
+<PageTitle>Students By School</PageTitle>
+
+<h1>Students By School</h1>
+
+<label>Enter School Name:</label>
+<input @bind="schoolName" placeholder="Enter school name..." />
+<button @onclick="LoadStudents">Load</button>
+
+@if (students == null) {
+    <p><em>Loading...</em></p>
+} else {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>School</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in students)
+            {
+                <tr>
+                    <td>@item.StudentId</td>
+                    <td>@item.FirstName @item.LastName</td>
+                    <td>@item.School</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string schoolName = "";
+    private Student[]? students;
+
+    private async Task LoadStudents() {
+        if (!string.IsNullOrWhiteSpace(schoolName)) {
+          students = await Http.GetFromJsonAsync<Student[]>($"/api/students/school/{schoolName}");
+          
+        }
+    }
+
+    public class Student {
+        public int StudentId { get; set; }
+        public string? LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? School { get; set; }
+    }
+}

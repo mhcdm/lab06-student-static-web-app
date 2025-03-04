@@ -1,0 +1,41 @@
+@page "/student-count"
+@inject HttpClient Http
+
+<PageTitle>Student Count By School</PageTitle>
+
+<h1>Student Count By School</h1>
+
+@if (schoolCounts == null) {
+    <p><em>Loading...</em></p>
+} else {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>School</th>
+                <th>Student Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in schoolCounts)
+            {
+                <tr>
+                    <td>@item.School</td>
+                    <td>@item.Count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private SchoolCount[]? schoolCounts;
+
+    protected override async Task OnInitializedAsync() {
+      schoolCounts = await Http.GetFromJsonAsync<SchoolCount[]>("/api/students/count-by-school");
+    }
+
+    public class SchoolCount {
+        public string? School { get; set; }
+        public int Count { get; set; }
+    }
+}
